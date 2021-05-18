@@ -10,6 +10,7 @@ class User(models.Model):
     email = models.CharField(max_length=200)                         # 이메일
     password = models.CharField(max_length=200)                      # 암호화 하면 문자가 길어지기에
     create_date = models.DateTimeField(auto_now_add=True)            # 생성일
+    token = models.CharField(max_length=200, null=True)
 
 
 # 게시판 모델

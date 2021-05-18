@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'name', 'email', 'password', 'user']  # id는 pk로 쓰이는 자동 생성 필드
+        fields = ['id', 'name', 'email', 'password', 'user', 'token']  # id는 pk로 쓰이는 자동 생성 필드
 
 
 

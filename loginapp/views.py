@@ -1,11 +1,9 @@
 from django.http import HttpResponse, JsonResponse
-from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
-
-from .forms import UploadFileForm
-from .models import User, Video
-from .serializers import UserSerializer,  VideoSerializer
 from rest_framework.parsers import JSONParser
+
+from .models import User, Video
+from .serializers import UserSerializer, VideoSerializer
 
 
 # 1-1.user_list - 계정 전체 조회(GET), 회원가입(POST)
@@ -27,7 +25,6 @@ def user_list(request):
 
 # 1-2.user - pk로 특정 계정 조회(GET), 수정(PUT), 삭제(DELETE)
 def user(request, pk):
-
     obj = User.objects.get(pk=pk)  # obj에 한 사용자 넣기
 
     if request.method == 'GET':
@@ -50,15 +47,16 @@ def user(request, pk):
 # 1-3.login - 로그인(POST)
 @csrf_exempt
 def login(request):
-    if request.method == 'POST':
-        data = JSONParser().parse(request)
-        search_email = data['email']
-        obj = User.objects.get(email=search_email)
+    if request.method == 'POST':  # post로 받기
+        data = JSONParser().parse(request)  # request json화 해서 data넣기
+        search_email = data['email']  # email 변수에다가 request email 필드 값 넣기
+        obj = User.objects.get(email=search_email)  #
 
         if data['password'] == obj.password:
-            return HttpResponse(status=200)
+            return HttpResponse(obj.id, status=200)
         else:
             return HttpResponse(status=400)
+
 
 # 2-1.video_list
 @csrf_exempt
@@ -70,7 +68,7 @@ def video_list(request):
 
     elif request.method == 'POST':
         video = Video()
-        video.user_id = User.objects.get(id=3)
+        video.user_id = User.objects.get(id=request.POST['id'])
         video.object = request.POST['object']
         video.video = request.FILES['video']
         video.thumbnail = request.FILES['thumbnail']
@@ -81,7 +79,6 @@ def video_list(request):
 
 # 2-2.user - pk로 특정 계정 조회(GET), 수정(PUT), 삭제(DELETE)
 def video(request, pk):
-
     obj = User.objects.get(pk=pk)  # obj에 한 사용자 넣기
 
     if request.method == 'GET':
@@ -101,3 +98,10 @@ def video(request, pk):
         return HttpResponse(status=204)
 
 
+@csrf_exempt
+def update_token(request):
+    if request.method == 'POST':
+        user = User.objects.get(id=request.POST["id"])
+        user.token = request.POST["token"]
+        user.save()
+        return HttpResponse("OK", status=200)
