@@ -1,7 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-
+from loginapp.fcm import sendFcm
 from .models import User, Video
 from .serializers import UserSerializer, VideoSerializer
 
@@ -47,9 +47,9 @@ def user(request, pk):
 # 1-3.login - 로그인(POST)
 @csrf_exempt
 def login(request):
-    if request.method == 'POST': # post로 받기
+    if request.method == 'POST':  # post로 받기
         data = JSONParser().parse(request)  # request json화 해서 data넣기
-        search_email = data['email']        # email 변수에다가 request email 필드 값 넣기
+        search_email = data['email']  # email 변수에다가 request email 필드 값 넣기
         obj = User.objects.get(email=search_email)  #
 
         if data['password'] == obj.password:
@@ -67,13 +67,18 @@ def video_list(request):
         return JsonResponse(serializer.data, safe=False)
 
     elif request.method == 'POST':
+        user = User.objects.get(id=request.POST['id'])
+        fcmToken = user.token
+        object = request.POST['object']
+
         video = Video()
         video.user_id = User.objects.get(id=request.POST['id'])
-        video.object = request.POST['object']
+        video.object = object
         video.video = request.FILES['video']
         video.thumbnail = request.FILES['thumbnail']
         video.dateTime = request.POST['dateTime']
         video.save()
+        sendFcm(fcmToken, object)
         return HttpResponse("OK")
 
 

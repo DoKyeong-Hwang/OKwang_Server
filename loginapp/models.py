@@ -20,6 +20,6 @@ class Video(models.Model):
     object = models.CharField(max_length=200)             # 객체 이름
     video = models.FileField(upload_to="media/videos/", null=True)              # 비디오
     thumbnail = models.ImageField(upload_to="media/thumbnails/", null=True)          # 썸네일
-    dateTime = models.DateTimeField(auto_now_add=True)            # 생성일
+    dateTime = models.CharField(max_length=200, null=True)            # 생성일
 
 
