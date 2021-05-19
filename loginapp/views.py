@@ -47,15 +47,15 @@ def user(request, pk):
 # 1-3.login - 로그인(POST)
 @csrf_exempt
 def login(request):
-    if request.method == 'POST':  # post로 받기
+    if request.method == 'POST': # post로 받기
         data = JSONParser().parse(request)  # request json화 해서 data넣기
-        search_email = data['email']  # email 변수에다가 request email 필드 값 넣기
+        search_email = data['email']        # email 변수에다가 request email 필드 값 넣기
         obj = User.objects.get(email=search_email)  #
 
         if data['password'] == obj.password:
             return HttpResponse(obj.id, status=200)
         else:
-            return HttpResponse(status=400)
+            return HttpResponse("400", status=400)
 
 
 # 2-1.video_list
